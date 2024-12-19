@@ -1,0 +1,100 @@
+{
+    "areas": [
+        {
+            "name": "نجد",
+            "coordinates": [
+                [25.8283, 44.7729],
+                [24.1547, 47.9834],
+                [23.2367, 45.8642],
+                [24.9237, 43.7623]
+            ]
+        },
+        {
+            "name": "الحجاز",
+            "coordinates": [
+                [23.4219, 39.8262],
+                [21.4225, 39.8262],
+                [20.9873, 41.2847],
+                [22.7851, 41.1234]
+            ]
+        },
+        {
+            "name": "عسير",
+            "coordinates": [
+                [19.8876, 41.7623],
+                [18.2156, 42.5047],
+                [17.9934, 43.7645],
+                [19.2367, 43.2341]
+            ]
+        }
+    ],
+    "cities": [
+        {
+            "name": "الرياض",
+            "coordinates": [24.7136, 46.6753],
+            "type": "city",
+            "population": "7.6 مليون",
+            "url": "https://www.google.com/maps/place/Riyadh"
+        },
+        {
+            "name": "مكة المكرمة",
+            "coordinates": [21.4225, 39.8262],
+            "type": "city",
+            "population": "2.0 مليون",
+            "url": "https://www.google.com/maps/place/Mecca"
+        },
+        {
+            "name": "المدينة المنورة",
+            "coordinates": [24.4672, 39.6112],
+            "type": "city",
+            "population": "1.5 مليون",
+            "url": "https://www.google.com/maps/place/Medina"
+        },
+        {
+            "name": "جدة",
+            "coordinates": [21.5433, 39.1728],
+            "type": "city",
+            "population": "4.1 مليون",
+            "url": "https://www.google.com/maps/place/Jeddah"
+        },
+        {
+            "name": "الدمام",
+            "coordinates": [26.4207, 50.0888],
+            "type": "city",
+            "population": "1.2 مليون",
+            "url": "https://www.google.com/maps/place/Dammam"
+        }
+    ],
+    "locations": [
+        {
+            "name": "المسجد الحرام",
+            "coordinates": [21.4225, 39.8262],
+            "type": "religious",
+            "url": "https://www.google.com/maps/place/Great+Mosque+of+Mecca"
+        },
+        {
+            "name": "المسجد النبوي",
+            "coordinates": [24.4672, 39.6112],
+            "type": "religious",
+            "url": "https://www.google.com/maps/place/Al-Masjid+an-Nabawi"
+        },
+        {
+            "name": "برج المملكة",
+            "coordinates": [24.7111, 46.6744],
+            "type": "landmark",
+            "url": "https://www.google.com/maps/place/Kingdom+Centre"
+        },
+        {
+            "name": "مدائن صالح",
+            "coordinates": [26.8088, 37.9545],
+            "type": "historical",
+            "url": "https://www.google.com/maps/place/Hegra"
+        },
+        {
+            "name": "الدرعية التاريخية",
+            "coordinates": [24.7442, 46.5762],
+            "type": "historical",
+            "url": "https://www.google.com/maps/place/Ad+Diriyah"
+        }
+    ]
+}
