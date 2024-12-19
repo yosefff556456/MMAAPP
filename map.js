@@ -12,12 +12,12 @@ L.control.zoom({
 }).addTo(map);
 
 // إضافة طبقة الخريطة الأساسية
-const baseLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 12,
     minZoom: 2,
-    attribution: '© Esri',
-    updateWhenIdle: true, // تحديث الخريطة فقط عند التوقف عن التحريك
-    keepBuffer: 2 // تحسين الأداء عند التحريك
+    attribution: '© OpenStreetMap, © CartoDB',
+    updateWhenIdle: true,
+    keepBuffer: 2
 }).addTo(map);
 
 // تخزين البيانات في الذاكرة المؤقتة
@@ -41,12 +41,12 @@ fetch('data.json')
         // إضافة المناطق
         data.areas.forEach(area => {
             const polygon = L.polygon(area.coordinates, {
-                color: '#0078A8',
-                weight: 3,
-                fillOpacity: 0,
-                opacity: 0.8,
-                dashArray: '8, 12',
-                smoothFactor: 1.5
+                color: '#2C3E50',
+                weight: 2,
+                fillOpacity: 0.1,
+                opacity: 0.6,
+                dashArray: '5, 8',
+                smoothFactor: 2
             }).addTo(areasLayer);
 
             // حساب مركز المضلع بشكل دقيق
@@ -76,12 +76,12 @@ fetch('data.json')
         // تحسين أداء عرض المدن والمواقع
         const addPoint = (item, type) => {
             const point = L.circleMarker(item.coordinates, {
-                radius: type === 'city' ? 6 : 5,
-                fillColor: '#ffffff',
-                color: type === 'city' ? '#000000' : '#ff0000',
-                weight: 2.5,
-                opacity: 1,
-                fillOpacity: 0.9
+                radius: type === 'city' ? 5 : 4,
+                fillColor: type === 'city' ? '#3498DB' : '#E74C3C',
+                color: '#ffffff',
+                weight: 1.5,
+                opacity: 0.9,
+                fillOpacity: 0.8
             }).addTo(pointsLayer);
 
             const label = L.marker(item.coordinates, {
