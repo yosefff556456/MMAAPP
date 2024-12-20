@@ -3,10 +3,13 @@ const map = L.map('map', {
     minZoom: 2,
     maxZoom: 12,
     zoomControl: false,
-    preferCanvas: true, // تحسين الأداء باستخدام Canvas
+    preferCanvas: true,
     zoomSnap: 0.5,
     zoomDelta: 0.5,
-    wheelDebounceTime: 150
+    wheelDebounceTime: 100,
+    fadeAnimation: false,
+    zoomAnimation: true,
+    markerZoomAnimation: true
 }).setView([24.7136, 46.6753], 6);
 
 // إضافة أزرار التحكم في التكبير في الجانب الأيمن
@@ -15,12 +18,14 @@ L.control.zoom({
 }).addTo(map);
 
 // إضافة طبقة الخريطة الأساسية مع تحسين المظهر
-const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
     maxZoom: 12,
     minZoom: 2,
     attribution: '© OpenStreetMap, © CartoDB',
     updateWhenIdle: true,
-    keepBuffer: 2
+    keepBuffer: 4,
+    tileSize: 512,
+    zoomOffset: -1
 }).addTo(map);
 
 // تخزين البيانات في الذاكرة المؤقتة
@@ -45,27 +50,26 @@ fetch('data.json')
         data.areas.forEach(area => {
             const polygon = L.polygon(area.coordinates, {
                 color: '#4299e1',
-                weight: 2.5,
-                fillOpacity: 0.05,
-                opacity: 0.8,
-                dashArray: '',
-                smoothFactor: 1.5,
-                lineCap: 'round',
-                lineJoin: 'round'
+                weight: 2,
+                fillOpacity: 0.03,
+                opacity: 0.7,
+                smoothFactor: 2
             }).addTo(areasLayer);
 
             // حساب مركز المضلع بشكل دقيق
             const bounds = polygon.getBounds();
             const center = bounds.getCenter();
             
-            // إنشاء نقطة وسط المنطقة مع تثبيت النص داخل حدود المنطقة
-            const label = L.marker(center, {
-                icon: L.divIcon({
-                    className: 'area-label',
-                    html: `<div style="width: ${Math.min(bounds.getEast() - bounds.getWest(), 200)}px;">${area.name}</div>`,
-                    iconSize: [0, 0],
-                    iconAnchor: [0, 0]
-                })
+            // إضافة اسم المنطقة كنقطة ثابتة
+            const areaPoint = L.circleMarker(center, {
+                radius: 0,
+                fillOpacity: 0,
+                opacity: 0
+            }).bindTooltip(area.name, {
+                permanent: true,
+                direction: 'center',
+                className: 'area-label',
+                offset: [0, 0]
             }).addTo(areaLabels);
 
             // إضافة للبحث
@@ -81,25 +85,28 @@ fetch('data.json')
         // تحسين أداء عرض المدن والمواقع
         const addPoint = (item, type) => {
             const point = L.circleMarker(item.coordinates, {
-                radius: type === 'city' ? 8 : 6,
+                radius: type === 'city' ? 6 : 4,
                 fillColor: type === 'city' ? '#3182ce' : '#e53e3e',
                 color: '#ffffff',
-                weight: 2,
+                weight: 1.5,
                 opacity: 1,
                 fillOpacity: 0.9
             }).addTo(pointsLayer);
 
-            const label = L.marker(item.coordinates, {
-                icon: L.divIcon({
-                    className: 'location-label',
-                    html: `${item.name}${type === 'city' ? 
-                          '<div class="location-info">مدينة</div>' : 
-                          item.type === 'historical' ? '<div class="location-info">موقع تاريخي</div>' : 
-                          item.type === 'religious' ? '<div class="location-info">موقع ديني</div>' : 
-                          '<div class="location-info">معلم سياحي</div>'}`,
-                    iconSize: [120, 40],
-                    iconAnchor: [60, -5]
-                })
+            // إضافة اسم المدينة أو الموقع كنقطة ثابتة
+            const label = L.circleMarker(item.coordinates, {
+                radius: 0,
+                fillOpacity: 0,
+                opacity: 0
+            }).bindTooltip(`${item.name}${type === 'city' ? 
+                '<div class="location-info">مدينة</div>' : 
+                item.type === 'historical' ? '<div class="location-info">موقع تاريخي</div>' : 
+                item.type === 'religious' ? '<div class="location-info">موقع ديني</div>' : 
+                '<div class="location-info">معلم سياحي</div>'}`, {
+                permanent: true,
+                direction: 'top',
+                className: 'location-label',
+                offset: [0, -10]
             }).addTo(pointsLayer);
 
             point.bindPopup(`
