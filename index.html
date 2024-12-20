@@ -1,25 +1,12 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>خريطة المملكة العربية السعودية</title>
-    <!-- تحميل خريطة Leaflet بشكل محسن -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha384-VzLXTJGPSyTLX6d96AxgkKvE/LRb7ECGyTxuwtpjHnVWVZs2gp5RDjeM/tgBnVdM" crossorigin="anonymous">
-    <script defer src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha384-RFZC58YeKApoNsIbBxf4z6JJXmh+geBSgkCQXFyh+4tiFSJmJBt+2FbjxW7Ar16M" crossorigin="anonymous"></script>
-    <!-- خط تجوال العربي -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2c5282;
-            --secondary-color: #c53030;
-            --text-color: #2d3748;
-            --light-text: #4a5568;
-            --bg-color: #f8f9fa;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -30,14 +17,12 @@
         body {
             height: 100vh;
             overflow: hidden;
-            background-color: var(--bg-color);
         }
 
         #map {
             width: 100vw;
             height: 100vh;
-            background-color: #edf2f7;
-            z-index: 1;
+            background-color: #f5f5f5;
         }
 
         .search-container {
@@ -52,24 +37,19 @@
 
         .search-input {
             width: 100%;
-            padding: 10px 16px;
+            padding: 12px 16px;
             border: none;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(8px);
-            font-size: 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: all 0.2s ease;
-            color: var(--text-color);
-        }
-
-        .search-input::placeholder {
-            color: var(--light-text);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
             outline: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
 
         .search-results {
@@ -80,73 +60,60 @@
             left: 0;
             margin-top: 8px;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-height: 300px;
             overflow-y: auto;
-            overscroll-behavior: contain;
         }
 
         .search-result-item {
-            padding: 10px 16px;
+            padding: 12px 16px;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            color: var(--text-color);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
         }
 
         .search-result-item:hover {
-            background-color: #f7fafc;
-            color: var(--primary-color);
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .area-label {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: var(--primary-color) !important;
-            font-size: 17px !important;
-            font-weight: 700 !important;
-            text-align: center !important;
-            white-space: nowrap !important;
-            text-shadow: 1px 1px 0 #fff, 
-                       -1px 1px 0 #fff, 
-                       1px -1px 0 #fff, 
-                       -1px -1px 0 #fff !important;
-            padding: 4px !important;
-            letter-spacing: 0.3px !important;
+            background: transparent;
+            border: none;
+            color: #34495E;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+            pointer-events: none;
+            width: auto !important;
+            padding: 4px 8px;
         }
 
         .location-label {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: var(--text-color) !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
-            text-align: center !important;
-            white-space: nowrap !important;
-            text-shadow: 1px 1px 0 #fff, 
-                       -1px 1px 0 #fff, 
-                       1px -1px 0 #fff, 
-                       -1px -1px 0 #fff !important;
-            padding: 3px !important;
+            background: transparent;
+            border: none;
+            color: #2C3E50;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+            pointer-events: none;
+            width: auto !important;
         }
 
         .location-info {
-            font-size: 11px;
-            color: var(--light-text);
-            margin-top: 3px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .leaflet-tooltip {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
+            font-size: 12px;
+            color: #7F8C8D;
+            margin-top: 2px;
+            font-weight: normal;
         }
 
         @media (max-width: 768px) {
@@ -157,79 +124,108 @@
             }
 
             .search-input {
-                padding: 8px 12px;
+                padding: 8px;
                 font-size: 14px;
             }
 
             .area-label {
-                font-size: 15px !important;
+                font-size: 16px;
             }
 
             .location-label {
-                font-size: 12px !important;
-            }
-
-            .location-info {
-                font-size: 10px;
-                margin-top: 2px;
+                font-size: 12px;
             }
         }
 
+        /* تحسين أداء التحريك */
+        .leaflet-marker-icon {
+            will-change: transform;
+        }
+
+        /* تحسين التمرير */
         .search-results::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .search-results::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
         }
 
         .search-results::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
         }
 
         .search-results::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.3);
         }
 
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            padding: 4px;
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
 
-        .leaflet-popup-content {
-            margin: 12px;
-            color: var(--text-color);
-            font-size: 13px;
+        .legend-item {
+            margin: 5px 0;
+            font-size: 12px;
         }
 
-        .leaflet-popup-content strong {
-            color: var(--primary-color);
-            font-size: 15px;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .leaflet-popup-content a {
-            color: var(--primary-color);
-            text-decoration: none;
-            margin-top: 4px;
+        .legend-color {
             display: inline-block;
-            font-weight: 500;
+            width: 12px;
+            height: 12px;
+            margin-left: 5px;
+            border-radius: 50%;
         }
 
-        .leaflet-popup-content a:hover {
-            text-decoration: underline;
+        /* تحسين مظهر أزرار التحكم في التكبير */
+        .leaflet-control-zoom {
+            border: none !important;
+            margin-top: 20px !important;
+            margin-right: 20px !important;
+        }
+
+        .leaflet-control-zoom a {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #333 !important;
+            border: none !important;
+            backdrop-filter: blur(5px);
+        }
+
+        .leaflet-control-zoom a:hover {
+            background: rgba(255, 255, 255, 1) !important;
         }
     </style>
 </head>
 <body>
     <div class="search-container">
-        <input type="text" class="search-input" placeholder="ابحث عن منطقة، مدينة، أو موقع..." aria-label="بحث">
-        <div class="search-results" role="listbox"></div>
+        <input type="text" class="search-input" placeholder="ابحث عن منطقة، مدينة، أو موقع...">
+        <div class="search-results"></div>
     </div>
-    <div id="map" role="application" aria-label="خريطة المملكة العربية السعودية"></div>
-    <script src="map.js" defer></script>
+    <div class="legend">
+        <div class="legend-item">
+            <span class="legend-color" style="background: #ffffff; border: 2px solid #000"></span>
+            المدن
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background: #ffffff; border: 2px solid #ff0000"></span>
+            المواقع التاريخية
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background: transparent; border: 2px solid #0078A8"></span>
+            حدود المناطق
+        </div>
+    </div>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="map.js"></script>
 </body>
 </html>
