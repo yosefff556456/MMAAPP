@@ -3,7 +3,10 @@ const map = L.map('map', {
     minZoom: 2,
     maxZoom: 12,
     zoomControl: false,
-    preferCanvas: true // تحسين الأداء باستخدام Canvas
+    preferCanvas: true, // تحسين الأداء باستخدام Canvas
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
+    wheelDebounceTime: 150
 }).setView([24.7136, 46.6753], 6);
 
 // إضافة أزرار التحكم في التكبير في الجانب الأيمن
@@ -11,8 +14,8 @@ L.control.zoom({
     position: 'topright'
 }).addTo(map);
 
-// إضافة طبقة الخريطة الأساسية
-const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+// إضافة طبقة الخريطة الأساسية مع تحسين المظهر
+const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 12,
     minZoom: 2,
     attribution: '© OpenStreetMap, © CartoDB',
@@ -41,9 +44,9 @@ fetch('data.json')
         // إضافة المناطق
         data.areas.forEach(area => {
             const polygon = L.polygon(area.coordinates, {
-                color: '#34495E',
-                weight: 3.5,
-                fillOpacity: 0,
+                color: '#4299e1',
+                weight: 2.5,
+                fillOpacity: 0.05,
                 opacity: 0.8,
                 dashArray: '',
                 smoothFactor: 1.5,
@@ -78,8 +81,8 @@ fetch('data.json')
         // تحسين أداء عرض المدن والمواقع
         const addPoint = (item, type) => {
             const point = L.circleMarker(item.coordinates, {
-                radius: type === 'city' ? 7 : 5,
-                fillColor: type === 'city' ? '#3498DB' : '#E74C3C',
+                radius: type === 'city' ? 8 : 6,
+                fillColor: type === 'city' ? '#3182ce' : '#e53e3e',
                 color: '#ffffff',
                 weight: 2,
                 opacity: 1,
@@ -101,7 +104,7 @@ fetch('data.json')
 
             point.bindPopup(`
                 <strong>${item.name}</strong><br>
-                ${type === 'city' ? `عدد السكان: ${item.population}` : 
+                ${type === 'city' ? `عدد السكان: ${item.population.toLocaleString('ar-SA')}` : 
                  `النوع: ${item.type === 'historical' ? 'موقع تاريخي' : 
                           item.type === 'religious' ? 'موقع ديني' : 'معلم سياحي'}`}<br>
                 <a href="${item.url}" target="_blank">عرض في خرائط Google</a>
