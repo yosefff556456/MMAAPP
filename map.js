@@ -1,4 +1,4 @@
-// إنشاء الخريطة مع تحديد حدود التكبير والتصغير
+// تهيئة الخريطة
 const map = L.map('map', {
     minZoom: 2,
     maxZoom: 12,
@@ -9,26 +9,28 @@ const map = L.map('map', {
     wheelDebounceTime: 100,
     fadeAnimation: false,
     zoomAnimation: true,
-    markerZoomAnimation: true
+    markerZoomAnimation: true,
+    renderer: L.canvas({ padding: 0.5 })
 }).setView([24.7136, 46.6753], 6);
 
-// إضافة أزرار التحكم في التكبير في الجانب الأيمن
+// إضافة أزرار التحكم في التكبير
 L.control.zoom({
     position: 'topright'
 }).addTo(map);
 
-// إضافة طبقة الخريطة الأساسية مع تحسين المظهر
-const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+// إضافة طبقة الخريطة الأساسية (بدون أسماء)
+const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
     maxZoom: 12,
     minZoom: 2,
     attribution: '© OpenStreetMap, © CartoDB',
+    crossOrigin: true,
     updateWhenIdle: true,
     keepBuffer: 4,
     tileSize: 512,
     zoomOffset: -1
 }).addTo(map);
 
-// تخزين البيانات في الذاكرة المؤقتة
+// تخزين البيانات في الذاكرة
 let searchResults = [];
 let markers = L.layerGroup();
 let areaLabels = L.layerGroup();
@@ -43,28 +45,30 @@ let searchTimeout;
 fetch('data.json')
     .then(response => response.json())
     .then(data => {
-        // إنشاء طبقات مختلفة للعناصر
         const areasLayer = L.layerGroup();
 
         // إضافة المناطق
         data.areas.forEach(area => {
             const polygon = L.polygon(area.coordinates, {
-                color: '#4299e1',
-                weight: 2,
-                fillOpacity: 0.03,
-                opacity: 0.7,
-                smoothFactor: 2
+                color: '#2c5282',
+                weight: 2.5,
+                fillOpacity: 0,
+                opacity: 0.9,
+                smoothFactor: 2,
+                lineCap: 'round',
+                lineJoin: 'round',
+                interactive: true
             }).addTo(areasLayer);
 
-            // حساب مركز المضلع بشكل دقيق
+            // إضافة اسم المنطقة
             const bounds = polygon.getBounds();
             const center = bounds.getCenter();
             
-            // إضافة اسم المنطقة كنقطة ثابتة
             const areaPoint = L.circleMarker(center, {
                 radius: 0,
                 fillOpacity: 0,
-                opacity: 0
+                opacity: 0,
+                interactive: false
             }).bindTooltip(area.name, {
                 permanent: true,
                 direction: 'center',
@@ -80,24 +84,36 @@ fetch('data.json')
                 element: polygon,
                 bounds: bounds
             });
+
+            // إضافة تفاعل عند تحريك الماوس
+            polygon.on({
+                mouseover: () => {
+                    polygon.setStyle({ weight: 3, opacity: 1 });
+                },
+                mouseout: () => {
+                    polygon.setStyle({ weight: 2.5, opacity: 0.9 });
+                }
+            });
         });
 
-        // تحسين أداء عرض المدن والمواقع
+        // دالة إضافة النقاط (المدن والمواقع)
         const addPoint = (item, type) => {
             const point = L.circleMarker(item.coordinates, {
-                radius: type === 'city' ? 6 : 4,
-                fillColor: type === 'city' ? '#3182ce' : '#e53e3e',
+                radius: type === 'city' ? 5 : 4,
+                fillColor: type === 'city' ? '#2c5282' : '#c53030',
                 color: '#ffffff',
                 weight: 1.5,
                 opacity: 1,
-                fillOpacity: 0.9
+                fillOpacity: 1,
+                interactive: true
             }).addTo(pointsLayer);
 
-            // إضافة اسم المدينة أو الموقع كنقطة ثابتة
+            // إضافة التسمية
             const label = L.circleMarker(item.coordinates, {
                 radius: 0,
                 fillOpacity: 0,
-                opacity: 0
+                opacity: 0,
+                interactive: false
             }).bindTooltip(`${item.name}${type === 'city' ? 
                 '<div class="location-info">مدينة</div>' : 
                 item.type === 'historical' ? '<div class="location-info">موقع تاريخي</div>' : 
@@ -106,44 +122,56 @@ fetch('data.json')
                 permanent: true,
                 direction: 'top',
                 className: 'location-label',
-                offset: [0, -10]
+                offset: [0, -8]
             }).addTo(pointsLayer);
 
+            // إضافة النافذة المنبثقة
             point.bindPopup(`
                 <strong>${item.name}</strong><br>
                 ${type === 'city' ? `عدد السكان: ${item.population.toLocaleString('ar-SA')}` : 
                  `النوع: ${item.type === 'historical' ? 'موقع تاريخي' : 
                           item.type === 'religious' ? 'موقع ديني' : 'معلم سياحي'}`}<br>
-                <a href="${item.url}" target="_blank">عرض في خرائط Google</a>
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer">عرض في خرائط Google</a>
             `);
 
+            // إضافة للبحث
             searchResults.push({
                 name: item.name,
                 type: type === 'city' ? 'مدينة' : 'موقع',
                 coordinates: item.coordinates,
                 element: point
             });
+
+            // إضافة تفاعل عند تحريك الماوس
+            point.on({
+                mouseover: () => {
+                    point.setStyle({ radius: type === 'city' ? 6 : 5 });
+                },
+                mouseout: () => {
+                    point.setStyle({ radius: type === 'city' ? 5 : 4 });
+                }
+            });
         };
 
-        // إضافة المدن والمواقع بشكل مجمع
+        // إضافة المدن والمواقع
         data.cities.forEach(city => addPoint(city, 'city'));
         data.locations.forEach(location => addPoint(location, 'location'));
 
-        // إضافة الطبقات إلى الخريطة
+        // إضافة الطبقات للخريطة
         areasLayer.addTo(map);
         areaLabels.addTo(map);
         pointsLayer.remove();
 
-        // تحسين أداء تحديث الطبقات
+        // تحديث الطبقات حسب مستوى التكبير
         const updateLayers = () => {
             const zoom = map.getZoom();
             if (zoom >= 8) {
-                if (map.hasLayer(areaLabels)) {
+                if (!map.hasLayer(pointsLayer)) {
                     areaLabels.remove();
                     pointsLayer.addTo(map);
                 }
             } else {
-                if (map.hasLayer(pointsLayer)) {
+                if (!map.hasLayer(areaLabels)) {
                     pointsLayer.remove();
                     areaLabels.addTo(map);
                 }
@@ -154,7 +182,7 @@ fetch('data.json')
         map.on('zoomend', updateLayers);
         updateLayers();
 
-        // تحسين أداء البحث
+        // تحسين البحث
         searchInput.addEventListener('input', function(e) {
             clearTimeout(searchTimeout);
             const searchTerm = e.target.value.trim();
@@ -165,31 +193,39 @@ fetch('data.json')
                     return;
                 }
 
-                const filteredResults = searchResults.filter(item => 
-                    item.name.includes(searchTerm) || 
-                    item.type.includes(searchTerm)
-                ).slice(0, 10); // تحديد عدد النتائج
+                const filteredResults = searchResults
+                    .filter(item => 
+                        item.name.includes(searchTerm) || 
+                        item.type.includes(searchTerm)
+                    )
+                    .slice(0, 8);
 
                 searchResultsContainer.innerHTML = '';
-                filteredResults.forEach(result => {
-                    const div = document.createElement('div');
-                    div.className = 'search-result-item';
-                    div.innerHTML = `${result.name} (${result.type})`;
-                    div.addEventListener('click', () => {
-                        if (result.bounds) {
-                            map.fitBounds(result.bounds);
-                        } else {
-                            map.setView(result.coordinates, 9);
-                        }
-                        result.element.openPopup();
-                        searchResultsContainer.style.display = 'none';
-                        searchInput.value = '';
+                
+                if (filteredResults.length > 0) {
+                    filteredResults.forEach(result => {
+                        const div = document.createElement('div');
+                        div.className = 'search-result-item';
+                        div.setAttribute('role', 'option');
+                        div.innerHTML = `${result.name} (${result.type})`;
+                        div.addEventListener('click', () => {
+                            if (result.bounds) {
+                                map.fitBounds(result.bounds, { padding: [50, 50] });
+                            } else {
+                                map.setView(result.coordinates, 9);
+                            }
+                            result.element.openPopup();
+                            searchResultsContainer.style.display = 'none';
+                            searchInput.value = '';
+                            searchInput.blur();
+                        });
+                        searchResultsContainer.appendChild(div);
                     });
-                    searchResultsContainer.appendChild(div);
-                });
-
-                searchResultsContainer.style.display = filteredResults.length ? 'block' : 'none';
-            }, 200); // تأخير البحث لتحسين الأداء
+                    searchResultsContainer.style.display = 'block';
+                } else {
+                    searchResultsContainer.style.display = 'none';
+                }
+            }, 150);
         });
 
         // إخفاء نتائج البحث عند النقر خارج القائمة
@@ -199,4 +235,4 @@ fetch('data.json')
             }
         });
     })
-    .catch(error => console.error('Error loading map data:', error));
+    .catch(error => console.error('خطأ في تحميل بيانات الخريطة:', error));
