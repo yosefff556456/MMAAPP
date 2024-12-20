@@ -12,7 +12,7 @@ L.control.zoom({
 }).addTo(map);
 
 // إضافة طبقة الخريطة الأساسية
-const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
     maxZoom: 12,
     minZoom: 2,
     attribution: '© OpenStreetMap, © CartoDB',
@@ -41,12 +41,14 @@ fetch('data.json')
         // إضافة المناطق
         data.areas.forEach(area => {
             const polygon = L.polygon(area.coordinates, {
-                color: '#2C3E50',
-                weight: 2,
-                fillOpacity: 0.1,
-                opacity: 0.6,
-                dashArray: '5, 8',
-                smoothFactor: 2
+                color: '#34495E',
+                weight: 3.5,
+                fillOpacity: 0,
+                opacity: 0.8,
+                dashArray: '',
+                smoothFactor: 1.5,
+                lineCap: 'round',
+                lineJoin: 'round'
             }).addTo(areasLayer);
 
             // حساب مركز المضلع بشكل دقيق
@@ -76,22 +78,24 @@ fetch('data.json')
         // تحسين أداء عرض المدن والمواقع
         const addPoint = (item, type) => {
             const point = L.circleMarker(item.coordinates, {
-                radius: type === 'city' ? 5 : 4,
+                radius: type === 'city' ? 7 : 5,
                 fillColor: type === 'city' ? '#3498DB' : '#E74C3C',
                 color: '#ffffff',
-                weight: 1.5,
-                opacity: 0.9,
-                fillOpacity: 0.8
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.9
             }).addTo(pointsLayer);
 
             const label = L.marker(item.coordinates, {
                 icon: L.divIcon({
                     className: 'location-label',
-                    html: `${item.name}<div class="location-info">${type === 'city' ? item.population : 
-                          item.type === 'historical' ? 'موقع تاريخي' : 
-                          item.type === 'religious' ? 'موقع ديني' : 'معلم سياحي'}</div>`,
+                    html: `${item.name}${type === 'city' ? 
+                          '<div class="location-info">مدينة</div>' : 
+                          item.type === 'historical' ? '<div class="location-info">موقع تاريخي</div>' : 
+                          item.type === 'religious' ? '<div class="location-info">موقع ديني</div>' : 
+                          '<div class="location-info">معلم سياحي</div>'}`,
                     iconSize: [120, 40],
-                    iconAnchor: [60, -10]
+                    iconAnchor: [60, -5]
                 })
             }).addTo(pointsLayer);
 
