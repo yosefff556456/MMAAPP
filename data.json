@@ -66,24 +66,7 @@
         }
     ],
     "locations": [
-        {
-            "name": "المسجد الحرام",
-            "coordinates": [21.4225, 39.8262],
-            "type": "religious",
-            "url": "https://www.google.com/maps/place/Great+Mosque+of+Mecca"
-        },
-        {
-            "name": "المسجد النبوي",
-            "coordinates": [24.4672, 39.6112],
-            "type": "religious",
-            "url": "https://www.google.com/maps/place/Al-Masjid+an-Nabawi"
-        },
-        {
-            "name": "برج المملكة",
-            "coordinates": [24.7111, 46.6744],
-            "type": "landmark",
-            "url": "https://www.google.com/maps/place/Kingdom+Centre"
-        },
+
         {
             "name": "مدائن صالح",
             "coordinates": [26.8088, 37.9545],
